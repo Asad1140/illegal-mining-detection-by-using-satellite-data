@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  illegal-mining-detection-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: illegal-mining-detection-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SATELLITE_PROVIDER=COPERNICUS_SENTINEL_DEMO
+      - GEE_PROJECT_ID=
+      - COPERNICUS_API_URL=https://dataspace.copernicus.eu/api
+      - NASA_API_KEY=
+      - DATABASE_URL=sqlite:///./illegal_mining_detection.db
+    volumes:
+      - ./backend/data:/app/data
+    restart: unless-stopped
+
+  illegal-mining-detection-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: illegal-mining-detection-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - illegal-mining-detection-backend
+    restart: unless-stopped
